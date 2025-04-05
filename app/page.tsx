@@ -1,7 +1,7 @@
 import AcmeLogo from '@/app/ui/acme-logo';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-
+import styles from '@/app/ui/home.module.css';
 export default function Page() {
   return (
     <main className="flex min-h-screen flex-col p-6">
@@ -16,6 +16,9 @@ export default function Page() {
               Next.js Learn Course
             </a>
             , brought to you by Vercel.
+          </p>
+          <p className={styles.basic}>
+            Sample text
           </p>
           <Link
             href="/login"
