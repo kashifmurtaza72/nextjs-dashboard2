@@ -33,7 +33,7 @@ export async function createInvoice(formData: FormData) {
       VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
     `;
   } catch (error) {
-    console.log(error, 'kkkkkkkkkkkk');
+    console.log(error);
   }
 
   revalidatePath("/dashboard/invoices");
@@ -55,7 +55,7 @@ export async function updateInvoice(id: string, formData: FormData) {
     WHERE id = ${id}
   `;
   } catch (error) {
-    console.log(error);
+    console.log(error, 'kkkk');
   }
 
   revalidatePath("/dashboard/invoices");
