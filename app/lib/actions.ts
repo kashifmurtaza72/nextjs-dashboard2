@@ -1,9 +1,31 @@
 "use server";
 
+import { signIn } from "@/auth";
+import { AuthError } from "next-auth";
+
 import { z } from "zod";
 import postgres from "postgres";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData
+) {
+  try {
+    await signIn("credentials", formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return "Invalid credentials.";
+        default:
+          return "Something went wrong.";
+      }
+    }
+    throw error;
+  }
+}
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
@@ -20,8 +42,6 @@ const FormSchema = z.object({
   }),
   date: z.string(),
 });
-
-
 
 export type State = {
   errors?: {
@@ -42,24 +62,24 @@ const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 
 export async function createInvoice(prevState: State, formData: FormData) {
   const rawFormData = {
-    customerId: formData.get('customerId') as string,
-    amount: formData.get('amount') as string,
-    status: formData.get('status') as string,
-  }
+    customerId: formData.get("customerId") as string,
+    amount: formData.get("amount") as string,
+    status: formData.get("status") as string,
+  };
 
   const validatedFields = CreateInvoice.safeParse(rawFormData);
 
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Create Invoice.',
+      message: "Missing Fields. Failed to Create Invoice.",
       fieldValues: rawFormData,
     };
   }
 
   const { customerId, amount, status } = validatedFields.data;
   const amountInCents = amount * 100;
-  const date = new Date().toISOString().split('T')[0];
+  const date = new Date().toISOString().split("T")[0];
 
   try {
     await sql`
@@ -68,13 +88,13 @@ export async function createInvoice(prevState: State, formData: FormData) {
     `;
   } catch (error) {
     return {
-      message: 'Database Error: Failed to Create Invoice.',
+      message: "Database Error: Failed to Create Invoice.",
       fieldValues: rawFormData,
     };
   }
 
-  revalidatePath('/dashboard/invoices');
-  redirect('/dashboard/invoices');
+  revalidatePath("/dashboard/invoices");
+  redirect("/dashboard/invoices");
 }
 
 export async function updateInvoice(id: string, formData: FormData) {
