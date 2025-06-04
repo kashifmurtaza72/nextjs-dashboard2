@@ -3,13 +3,13 @@ import { lusitana } from '@/app/ui/fonts';
 import Search from '@/app/ui/search';
 import {
   CustomersTableType,
-  FormattedCustomersTable,
+  Customer,
 } from '@/app/lib/definitions';
 
 export default async function CustomersTable({
   customers,
 }: {
-  customers: FormattedCustomersTable[];
+  customers: Customer[]; 
 }) {
   return (
     <div className="w-full">
@@ -17,6 +17,9 @@ export default async function CustomersTable({
         Customers
       </h1>
       <Search placeholder="Search customers..." />
+      {
+        console.log(customers)
+      }
       <div className="mt-6 flow-root">
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full align-middle">
