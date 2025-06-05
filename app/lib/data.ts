@@ -167,12 +167,13 @@ export async function fetchInvoiceById(id: string) {
   }
 }
 
-// export async function fetchCustomers() {
+// export async function CustomersTable() {
 //   try {
-//     const customers = await sql<CustomerField[]>`
+//     const customers = await sql<CustomersTable[]>`
 //       SELECT
 //         id,
-//         name
+//         name,
+//         image_url
 //       FROM customers
 //       ORDER BY name ASC
 //     `;
@@ -192,7 +193,6 @@ export async function fetchCustomers(query: string) {
     FROM customers
     ORDER BY name ASC
     `;
-    console.log(customers,'kk')
     return customers;
   } catch (error) {
     //kkkk/// console.error("Database Error:", error);
@@ -200,7 +200,11 @@ export async function fetchCustomers(query: string) {
   }
 }
 
-export async function fetchFilteredCustomers(query: string) {
+export async function fetchFilteredCustomers(
+  query: string,
+  currentPage: number
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
   try {
     const data = await sql<CustomersTableType[]>`
 		SELECT
@@ -218,6 +222,7 @@ export async function fetchFilteredCustomers(query: string) {
         customers.email ILIKE ${`%${query}%`}
 		GROUP BY customers.id, customers.name, customers.email, customers.image_url
 		ORDER BY customers.name ASC
+    LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
 	  `;
 
     const customers = data.map((customer) => ({

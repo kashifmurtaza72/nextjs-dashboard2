@@ -20,7 +20,7 @@ export default async function Page(props: {
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
   const totalPages = await fetchCustomers(query);
-
+  console.log(totalPages, 'kkkkkk')
   return (
     <div className="w-full">
       <div className="flex w-full items-center justify-between">
@@ -35,7 +35,7 @@ export default async function Page(props: {
       </Suspense>
       <div className="mt-5 flex w-full justify-center">
         
-        <Pagination totalPages={totalPages} />
+        {/* <Pagination totalPages={totalPages} /> */}
       </div>
     </div>
   );
