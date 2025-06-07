@@ -6,7 +6,7 @@ import { lusitana } from '@/app/ui/fonts';
 import { CustomersTableSkeleton } from '@/app/ui/skeletons';
 import { Suspense } from 'react';
 import { fetchInvoicesPages } from '@/app/lib/data';
-import {fetchCustomers} from '@/app/lib/data';
+import {fetchAllCustomers} from '@/app/lib/data';
 
 
 
@@ -19,8 +19,7 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
-  const totalPages = await fetchCustomers(query);
-  console.log(totalPages, 'kkkkkk')
+  const totalPages = await fetchAllCustomers(query);
   return (
     <div className="w-full">
       <div className="flex w-full items-center justify-between">

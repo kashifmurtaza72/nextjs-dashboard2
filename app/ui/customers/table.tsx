@@ -1,8 +1,9 @@
-import Image from 'next/image';
-import { UpdateInvoice, DeleteInvoice } from '@/app/ui/invoices/buttons';
-import InvoiceStatus from '@/app/ui/invoices/status';
-import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
-import { fetchFilteredCustomers } from '@/app/lib/data';
+import Image from "next/image";
+//import { UpdateCustomer, DeleteCustomer } from "@/app/ui/customers/buttons";
+import { UpdateCustomer, DeleteCustomer } from "@/app/ui/customers/buttons";
+import InvoiceStatus from "@/app/ui/invoices/status";
+import { formatDateToLocal, formatCurrency } from "@/app/lib/utils";
+import { fetchFilteredCustomers } from "@/app/lib/data";
 
 export default async function CustomersTable({
   query,
@@ -26,16 +27,17 @@ export default async function CustomersTable({
                 <div className="flex items-center justify-between border-b pb-4">
                   <div>
                     <div className="mb-2 flex items-center">
-                      <Image
+                      
+                      <p>{customer.name}</p>
+                    </div>
+                    <p className="text-sm text-gray-500">{customer.email}</p>
+                    <p><Image
                         src={customer.image_url}
                         className="mr-2 rounded-full"
                         width={28}
                         height={28}
                         alt={`${customer.name}'s profile picture`}
-                      />
-                      <p>{customer.name}</p>
-                    </div>
-                    <p className="text-sm text-gray-500">{customer.email}</p>
+                      /></p>
                   </div>
                   {/* <InvoiceStatus status={customer.status} /> */}
                 </div>
@@ -47,8 +49,8 @@ export default async function CustomersTable({
                     <p>{formatDateToLocal(invoice.date)}</p>
                   </div> */}
                   <div className="flex justify-end gap-2">
-                    <UpdateInvoice id={customer.id} />
-                    <DeleteInvoice id={customer.id} />
+                    <UpdateCustomer id={customer.id} />
+                    <DeleteCustomer id={customer.id} />
                   </div>
                 </div>
               </div>
@@ -58,19 +60,13 @@ export default async function CustomersTable({
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>
                 <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-                  Customer
+                  Customer Name
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   Email
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  Amount
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Date
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Status
+                  Image
                 </th>
                 <th scope="col" className="relative py-3 pl-6 pr-3">
                   <span className="sr-only">Edit</span>
@@ -85,32 +81,25 @@ export default async function CustomersTable({
                 >
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex items-center gap-3">
-                      <Image
-                        src={customer.image_url}
-                        className="rounded-full"
-                        width={28}
-                        height={28}
-                        alt={`${customer.name}'s profile picture`}
-                      />
                       <p>{customer.name}</p>
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {customer.email}
                   </td>
-                  {/* <td className="whitespace-nowrap px-3 py-3">
-                    {formatCurrency(customer.amount)}
-                  </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {formatDateToLocal(invoice.date)}
+                    <Image
+                      src={customer.image_url}
+                      className="rounded-full"
+                      width={28}
+                      height={28}
+                      alt={`${customer.name}'s profile picture`}
+                    />
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    <InvoiceStatus status={invoice.status} />
-                  </td> */}
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                    <div className="flex justify-end gap-3"> 
-                      <UpdateInvoice id={customer.id} />
-                      <DeleteInvoice id={customer.id} />
+                    <div className="flex justify-end gap-3">
+                      <UpdateCustomer id={customer.id} />
+                      <DeleteCustomer id={customer.id} />
                     </div>
                   </td>
                 </tr>

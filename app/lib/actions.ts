@@ -124,3 +124,45 @@ export async function deleteInvoice(id: string) {
   await sql`DELETE FROM invoices WHERE id = ${id}`;
   revalidatePath("/dashboard/invoices");
 }
+
+
+const CreateCustomer = FormSchema.omit({ id: true, date: true });
+const UpdateCustomer = FormSchema.omit({ id: true, date: true });
+
+export async function createCustomer(prevState: State, formData: FormData) {
+  const rawFormData = {
+    //customerId: formData.get("customerId") as string,
+    customerName: formData.get("customerName") as String,
+    customerEmail: formData.get("customerEmail") as String,
+    customerImageUrl: formData.get("customerImageUrl") as String,
+  };
+
+  const validatedFieldss = CreateCustomer.safeParse(rawFormData);
+
+  if (!validatedFieldss.success) {
+    return {
+      errors: validatedFieldss.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to Create Invoice.",
+      fieldValues: rawFormData,
+    };
+  }
+
+  const { customerName, customerEmail, customerImageUrl } = validatedFieldss.data;
+  //const amountInCents = amount * 100;
+  //const date = new Date().toISOString().split("T")[0];
+
+  try {
+    await sql`
+      INSERT INTO customers (name, email, image_url)
+      VALUES (${customerName}, ${customerEmail}, ${customerImageUrl})
+    `;
+  } catch (error) {
+    return {
+      message: `Database Error: Failed to Create Invoice.${error}`,
+      fieldValues: rawFormData,
+    };
+  }
+
+  revalidatePath("/dashboard/invoices");
+  redirect("/dashboard/invoices");
+}
