@@ -57,6 +57,31 @@ export type State = {
   };
 };
 
+const CustomerFormSchema = z.object({
+  id: z.string(),
+  // customerId: z.string({
+  //   invalid_type_error: "Please add customer name.",
+  // }),
+  name: z.string({ invalid_type_error: "Please add customer name" }),
+  email: z.string({ invalid_type_error: "Please add customer email" }),
+  image_url: z.string({ invalid_type_error: "Please add customer Image" }),
+
+});
+
+export type CustomerState = {
+  errors?: {
+    id?: string[];
+    name?: string[];
+    email?: string[];
+  };
+  message?: string | null;
+  cFieldValues?: {
+    id?: string;
+    name?: string;
+    email?: string;
+  };
+};
+
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 
@@ -125,29 +150,35 @@ export async function deleteInvoice(id: string) {
   revalidatePath("/dashboard/invoices");
 }
 
+const CreateCustomer = CustomerFormSchema.omit({ id: true });
+const UpdateCustomer = CustomerFormSchema.omit({ id: true});
 
-const CreateCustomer = FormSchema.omit({ id: true, date: true });
-const UpdateCustomer = FormSchema.omit({ id: true, date: true });
-
-export async function createCustomer(prevState: State, formData: FormData) {
-  const rawFormData = {
+export async function createCustomer(prevState: CustomerState, formData: FormData) {
+  const rawCFormData = {
     //customerId: formData.get("customerId") as string,
-    customerName: formData.get("customerName") as String,
-    customerEmail: formData.get("customerEmail") as String,
-    customerImageUrl: formData.get("customerImageUrl") as String,
+    customerName: formData.get("name") as String,
+    customerEmail: formData.get("email") as String,
+    //customerImageUrl: formData.get("customerImageUrl") as String,
   };
 
-  const validatedFieldss = CreateCustomer.safeParse(rawFormData);
+  ///console.log(rawCFormData, 'kashif')
+  //console.log(CreateCustomer.safeParse(rawFormData), "kkkkkkkkkk");
+
+  const validatedFieldss = CreateCustomer.safeParse(rawCFormData);
+  
+  console.log(validatedFieldss, 'kashiffffffff')
 
   if (!validatedFieldss.success) {
     return {
       errors: validatedFieldss.error.flatten().fieldErrors,
       message: "Missing Fields. Failed to Create Invoice.",
-      fieldValues: rawFormData,
+      cFieldValues: rawCFormData,
     };
   }
 
-  const { customerName, customerEmail, customerImageUrl } = validatedFieldss.data;
+    //console.log(validatedFieldss.data, 'kkkkkk')
+  // const { customerName, customerEmail, customerImageUrl } =
+    validatedFieldss.data;
   //const amountInCents = amount * 100;
   //const date = new Date().toISOString().split("T")[0];
 
@@ -159,7 +190,7 @@ export async function createCustomer(prevState: State, formData: FormData) {
   } catch (error) {
     return {
       message: `Database Error: Failed to Create Invoice.${error}`,
-      fieldValues: rawFormData,
+      cFieldValues: rawCFormData,
     };
   }
 
