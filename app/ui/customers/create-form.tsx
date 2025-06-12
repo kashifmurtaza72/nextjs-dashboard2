@@ -11,7 +11,8 @@ import { Button } from "@/app/ui/button";
 import { createCustomer, CustomerState } from "@/app/lib/actions";
 import { useActionState, useEffect, useRef } from "react";
 
-export default function Form({ customers }: { customers: CustomerField[] }) {
+export default function Form() {
+  
   const initialState: CustomerState = {
     message: null,
     errors: {},
@@ -21,16 +22,16 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
 
   const formRef = useRef<HTMLFormElement>(null);
 
-  // useEffect(() => {
-  //   if (formRef.current) {
-  //     const customerSelect = formRef.current.elements.namedItem(
-  //       "customerId"
-  //     ) as HTMLSelectElement;
-  //     if (customerSelect && state.cFieldValues?.customerId) {
-  //       customerSelect.value = state.cFieldValues.customerId;
-  //     }
-  //   }
-  // }, [state.cFieldValues]);
+  useEffect(() => {
+    if (formRef.current) {
+      const customerSelect = formRef.current.elements.namedItem(
+        "customerId"
+      ) as HTMLSelectElement;
+      // if (customerSelect && state.cFieldValues?.customerId) {
+      //   customerSelect.value = state.cFieldValues.customerId;
+      // }
+    }
+  }, [state.cFieldValues]);
 
   // function handleChange(
   //   event: ChangeEvent<HTMLInputElement | HTMLSelectElement>

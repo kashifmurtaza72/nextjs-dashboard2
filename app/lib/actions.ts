@@ -58,7 +58,7 @@ export type State = {
 };
 
 const CustomerFormSchema = z.object({
-  id: z.string(),
+  //id: z.string(),
   // customerId: z.string({
   //   invalid_type_error: "Please add customer name.",
   // }),
@@ -70,15 +70,17 @@ const CustomerFormSchema = z.object({
 
 export type CustomerState = {
   errors?: {
-    id?: string[];
+    //id?: string[];
     name?: string[];
     email?: string[];
+    image_url?: string[];
   };
   message?: string | null;
   cFieldValues?: {
-    id?: string;
+   // id?: string;
     name?: string;
     email?: string;
+    image_url?: string;
   };
 };
 
@@ -150,23 +152,22 @@ export async function deleteInvoice(id: string) {
   revalidatePath("/dashboard/invoices");
 }
 
-const CreateCustomer = CustomerFormSchema.omit({ id: true });
-const UpdateCustomer = CustomerFormSchema.omit({ id: true});
-
+//const CreateCustomer = CustomerFormSchema.omit({ name: true });
+//const UpdateCustomer = CustomerFormSchema.omit({ id: true});
 export async function createCustomer(prevState: CustomerState, formData: FormData) {
   const rawCFormData = {
     //customerId: formData.get("customerId") as string,
     customerName: formData.get("name") as String,
     customerEmail: formData.get("email") as String,
-    //customerImageUrl: formData.get("customerImageUrl") as String,
+    customerImageUrl: formData.get("customerImageUrl") as String,
   };
 
-  ///console.log(rawCFormData, 'kashif')
-  //console.log(CreateCustomer.safeParse(rawFormData), "kkkkkkkkkk");
+  for (const value of formData.values()) {
+  console.log(value);
+}
 
-  const validatedFieldss = CreateCustomer.safeParse(rawCFormData);
+  const validatedFieldss = CustomerFormSchema.safeParse(rawCFormData);
   
-  console.log(validatedFieldss, 'kashiffffffff')
 
   if (!validatedFieldss.success) {
     return {
