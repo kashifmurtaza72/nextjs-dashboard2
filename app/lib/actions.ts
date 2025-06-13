@@ -58,7 +58,7 @@ export type State = {
 };
 
 const CustomerFormSchema = z.object({
-  //id: z.string(),
+  id: z.string(),
   // customerId: z.string({
   //   invalid_type_error: "Please add customer name.",
   // }),
@@ -70,14 +70,12 @@ const CustomerFormSchema = z.object({
 
 export type CustomerState = {
   errors?: {
-    //id?: string[];
     name?: string[];
     email?: string[];
     image_url?: string[];
   };
   message?: string | null;
   cFieldValues?: {
-   // id?: string;
     name?: string;
     email?: string;
     image_url?: string;
@@ -152,22 +150,23 @@ export async function deleteInvoice(id: string) {
   revalidatePath("/dashboard/invoices");
 }
 
-//const CreateCustomer = CustomerFormSchema.omit({ name: true });
+const CreateCustomer = CustomerFormSchema.omit({ id: true });
 //const UpdateCustomer = CustomerFormSchema.omit({ id: true});
 export async function createCustomer(prevState: CustomerState, formData: FormData) {
   const rawCFormData = {
     //customerId: formData.get("customerId") as string,
-    customerName: formData.get("name") as String,
-    customerEmail: formData.get("email") as String,
-    customerImageUrl: formData.get("customerImageUrl") as String,
+    name: formData.get("name") as String,
+    email: formData.get("email") as String,
+    image_url: formData.get("image_url") as String,
   };
-
-  for (const value of formData.values()) {
-  console.log(value);
-}
-
-  const validatedFieldss = CustomerFormSchema.safeParse(rawCFormData);
   
+  //   for (const value of formData.values()) {
+    //   console.log(value);
+    // }
+    
+    const validatedFieldss = CreateCustomer.safeParse(rawCFormData);
+    console.log(validatedFieldss, '6.12.25')
+
 
   if (!validatedFieldss.success) {
     return {
@@ -178,15 +177,14 @@ export async function createCustomer(prevState: CustomerState, formData: FormDat
   }
 
     //console.log(validatedFieldss.data, 'kkkkkk')
-  // const { customerName, customerEmail, customerImageUrl } =
-    validatedFieldss.data;
+   const { name, email, image_url } = validatedFieldss.data;
   //const amountInCents = amount * 100;
   //const date = new Date().toISOString().split("T")[0];
 
   try {
     await sql`
       INSERT INTO customers (name, email, image_url)
-      VALUES (${customerName}, ${customerEmail}, ${customerImageUrl})
+      VALUES (${name}, ${email}, ${image_url})
     `;
   } catch (error) {
     return {
@@ -195,6 +193,6 @@ export async function createCustomer(prevState: CustomerState, formData: FormDat
     };
   }
 
-  revalidatePath("/dashboard/invoices");
-  redirect("/dashboard/invoices");
+  revalidatePath("/dashboard/customers");
+  redirect("/dashboard/customers");
 }

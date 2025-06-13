@@ -1,25 +1,13 @@
 "use client";
 import { CustomerField } from "@/app/lib/definitions";
 import Link from "next/link";
-// import {
-//   CheckIcon,
-//   ClockIcon,
-//   CurrencyDollarIcon,
-//   UserCircleIcon,
-// } from "@heroicons/react/24/outline";
 import { Button } from "@/app/ui/button";
 import { createCustomer, CustomerState } from "@/app/lib/actions";
 import { useActionState, useEffect, useRef } from "react";
 
-export default function Form() {
-  
-  const initialState: CustomerState = {
-    message: null,
-    errors: {},
-    cFieldValues: {},
-  };
-  const [state, formAction] = useActionState(createCustomer, initialState);
-
+export default function Form({ customers }: { customers: CustomerField[] }) {
+  const initialState: CustomerState = {message: null, errors: {}, cFieldValues: {}, };
+  const [state, cformAction] = useActionState(createCustomer, initialState);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -42,7 +30,7 @@ export default function Form() {
   // }
 
   return (
-    <form action={formAction} ref={formRef}>
+    <form action={cformAction} ref={formRef}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
