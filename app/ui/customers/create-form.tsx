@@ -9,10 +9,23 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
   const initialState: CustomerState = {
     message: null,
     errors: {},
-    cFieldValues: {},
+    //cFieldValues: {},
   };
   const [state, cformAction] = useActionState(createCustomer, initialState);
   //const formRef = useRef<HTMLFormElement>(null);
+
+    //const formRef = useRef<HTMLFormElement>(null);
+  
+    // useEffect(() => {
+    //   if (formRef.current) {
+    //     const customerSelect = formRef.current.elements.namedItem(
+    //       "customerId"
+    //     ) as HTMLSelectElement;
+    //     // if (customerSelect && state.cFieldValues?.customerId) {
+    //     //   customerSelect.value = state.cFieldValues.customerId;
+    //     // }
+    //   }
+    // }, [state.cFieldValues]);
 
   return (
     <form action={cformAction}>
@@ -35,8 +48,9 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                 id="name"
                 name="name"
                 type="text"
+                value="Kashif"
                 lang="en-US"
-                
+                // defaultValue={state.cFieldValues?.name || ""}
                 placeholder="Enter Customer Name"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 aria-describedby="name-error"
@@ -56,16 +70,17 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
         {/* Customer email */}
         <div className="mb-4">
           <label htmlFor="email" className="mb-2 block text-sm font-medium">
-            Add Customer Name
+            Add Customer Email
           </label>
           <div className="relative mt-2 rounded-md">
             <div className="relative">
               <input
                 id="email"
                 name="email"
+                value="kashif@gmail.com"
                 type="text"
                 lang="en-US"
-                
+                // defaultValue={state.cFieldValues?.email || ""}
                 placeholder="Enter Customer Email"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 aria-describedby="email-error"
@@ -92,9 +107,10 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               <input
                 id="image_url"
                 name="image_url"
+                value="/customers/lee-robinson.png"
                 type="text"
                 lang="en-US"
-                
+                // defaultValue={state.cFieldValues?.image_url || ""}
                 placeholder="Enter Customer image"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 aria-describedby="image_url-error"

@@ -59,12 +59,9 @@ export type State = {
 
 const CustomerFormSchema = z.object({
   id: z.string(),
-  // customerId: z.string({
-  //   invalid_type_error: "Please add customer name.",
-  // }),
   name: z.string({ invalid_type_error: "Please add customer name" }),
-  email: z.string({ invalid_type_error: "Please add customer email" }),
-  image_url: z.string({ invalid_type_error: "Please add customer Image" }),
+  email: z.string({ message: "Please add customer email" }),
+  image_url: z.string({ message: "Please add customer image_url" }),
 
 });
 
@@ -75,11 +72,11 @@ export type CustomerState = {
     image_url?: string[];
   };
   message?: string | null;
-  cFieldValues?: {
-    name?: string;
-    email?: string;
-    image_url?: string;
-  };
+  // cFieldValues?: {
+  //   name?: string;
+  //   email?: string;
+  //   image_url?: string;
+  // };
 };
 
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
@@ -160,6 +157,7 @@ export async function createCustomer(prevState: CustomerState, formData: FormDat
     image_url: formData.get("image_url") as String,
   };
   
+  
   //   for (const value of formData.values()) {
     //   console.log(value);
     // }
@@ -172,7 +170,7 @@ export async function createCustomer(prevState: CustomerState, formData: FormDat
     return {
       errors: validatedFieldss.error.flatten().fieldErrors,
       message: "Missing Fields. Failed to Create Invoice.",
-      cFieldValues: rawCFormData,
+      //cFieldValues: rawCFormData,
     };
   }
 
@@ -189,7 +187,7 @@ export async function createCustomer(prevState: CustomerState, formData: FormDat
   } catch (error) {
     return {
       message: `Database Error: Failed to Create Invoice.${error}`,
-      cFieldValues: rawCFormData,
+      //cFieldValues: rawCFormData,
     };
   }
 
