@@ -48,7 +48,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                 id="name"
                 name="name"
                 type="text"
-                value="Kashif"
+                
                 lang="en-US"
                 // defaultValue={state.cFieldValues?.name || ""}
                 placeholder="Enter Customer Name"
@@ -77,7 +77,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               <input
                 id="email"
                 name="email"
-                value="kashif@gmail.com"
+                
                 type="text"
                 lang="en-US"
                 // defaultValue={state.cFieldValues?.email || ""}
@@ -107,7 +107,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               <input
                 id="image_url"
                 name="image_url"
-                value="/customers/lee-robinson.png"
+                
                 type="text"
                 lang="en-US"
                 // defaultValue={state.cFieldValues?.image_url || ""}

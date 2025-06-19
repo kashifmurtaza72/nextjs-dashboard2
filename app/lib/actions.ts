@@ -8,6 +8,24 @@ import postgres from "postgres";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+export async function myAction(prevState: any, formData: FormData) {
+  await new Promise((resolve)=>setTimeout(resolve, 1000))
+  //return prevState + 1
+  const username = formData.get("username") as string;
+
+  if (username.length < 3) {
+    return {
+      success: false,
+      message: "username must be at least 3 characters long",
+    };
+  }
+
+  return {
+    success : true,
+    message : `username updated to ${username}`
+  }
+}
+
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData
@@ -62,7 +80,6 @@ const CustomerFormSchema = z.object({
   name: z.string({ invalid_type_error: "Please add customer name" }),
   email: z.string({ message: "Please add customer email" }),
   image_url: z.string({ message: "Please add customer image_url" }),
-
 });
 
 export type CustomerState = {
@@ -149,22 +166,23 @@ export async function deleteInvoice(id: string) {
 
 const CreateCustomer = CustomerFormSchema.omit({ id: true });
 //const UpdateCustomer = CustomerFormSchema.omit({ id: true});
-export async function createCustomer(prevState: CustomerState, formData: FormData) {
+export async function createCustomer(
+  prevState: CustomerState,
+  formData: FormData
+) {
   const rawCFormData = {
     //customerId: formData.get("customerId") as string,
     name: formData.get("name") as String,
     email: formData.get("email") as String,
     image_url: formData.get("image_url") as String,
   };
-  
-  
-  //   for (const value of formData.values()) {
-    //   console.log(value);
-    // }
-    
-    const validatedFieldss = CreateCustomer.safeParse(rawCFormData);
-    console.log(validatedFieldss, '6.12.25')
 
+  //   for (const value of formData.values()) {
+  //   console.log(value);
+  // }
+
+  const validatedFieldss = CreateCustomer.safeParse(rawCFormData);
+  console.log(validatedFieldss, "6.12.25");
 
   if (!validatedFieldss.success) {
     return {
@@ -174,8 +192,8 @@ export async function createCustomer(prevState: CustomerState, formData: FormDat
     };
   }
 
-    //console.log(validatedFieldss.data, 'kkkkkk')
-   const { name, email, image_url } = validatedFieldss.data;
+  //console.log(validatedFieldss.data, 'kkkkkk')
+  const { name, email, image_url } = validatedFieldss.data;
   //const amountInCents = amount * 100;
   //const date = new Date().toISOString().split("T")[0];
 
