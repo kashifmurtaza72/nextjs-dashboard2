@@ -1,4 +1,4 @@
-import Pagination from '@/app/ui/invoices/pagination';
+import Pagination from '@/app/ui/customers/pagination';
 import Search from '@/app/ui/search';
 import Table from '@/app/ui/customers/table';
 import { CreateCustomer } from '@/app/ui/customers/buttons';
@@ -6,7 +6,7 @@ import { lusitana } from '@/app/ui/fonts';
 import { CustomersTableSkeleton } from '@/app/ui/skeletons';
 import { Suspense } from 'react';
 import { fetchInvoicesPages } from '@/app/lib/data';
-import {fetchAllCustomers} from '@/app/lib/data';
+import {fetchCustomersPages} from '@/app/lib/data';
 
 
 
@@ -19,7 +19,7 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
-  const totalPages = await fetchAllCustomers(query);
+  const totalPages = await fetchCustomersPages(query);
   return (
     <div className="w-full">
       <div className="flex w-full items-center justify-between">
@@ -34,7 +34,7 @@ export default async function Page(props: {
       </Suspense>
       <div className="mt-5 flex w-full justify-center">
         
-        {/* <Pagination totalPages={totalPages} /> */}
+        <Pagination totalPages={totalPages} />
       </div>
     </div>
   );

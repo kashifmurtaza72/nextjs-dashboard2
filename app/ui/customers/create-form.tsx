@@ -1,15 +1,14 @@
 "use client";
-import { CustomerField } from "@/app/lib/definitions";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
 import { createCustomer, CustomerState } from "@/app/lib/actions";
 import { useActionState, useEffect, useRef } from "react";
 
-export default function Form({ customers }: { customers: CustomerField[] }) {
+export default function Form() {
   const initialState: CustomerState = {
     message: null,
     errors: {},
-    //cFieldValues: {},
+    cFieldValues: {},
   };
   const [state, cformAction] = useActionState(createCustomer, initialState);
   //const formRef = useRef<HTMLFormElement>(null);
@@ -50,7 +49,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                 type="text"
                 
                 lang="en-US"
-                // defaultValue={state.cFieldValues?.name || ""}
+                defaultValue={state.cFieldValues?.name || ""}
                 placeholder="Enter Customer Name"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 aria-describedby="name-error"
@@ -80,7 +79,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                 
                 type="text"
                 lang="en-US"
-                // defaultValue={state.cFieldValues?.email || ""}
+                defaultValue={state.cFieldValues?.email || ""}
                 placeholder="Enter Customer Email"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 aria-describedby="email-error"
@@ -110,7 +109,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                 
                 type="text"
                 lang="en-US"
-                // defaultValue={state.cFieldValues?.image_url || ""}
+                defaultValue={state.cFieldValues?.image_url || ""}
                 placeholder="Enter Customer image"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 aria-describedby="image_url-error"

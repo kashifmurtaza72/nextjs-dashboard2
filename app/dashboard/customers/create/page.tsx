@@ -15,7 +15,7 @@ const customers = await fetchCustomers();
           },
         ]}
       />
-      <Form customers={customers} />
+      <Form />
     </main>
   );
 }

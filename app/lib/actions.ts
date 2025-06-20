@@ -9,8 +9,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function myAction(prevState: any, formData: FormData) {
-  await new Promise((resolve)=>setTimeout(resolve, 1000))
-  //return prevState + 1
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  
   const username = formData.get("username") as string;
 
   if (username.length < 3) {
@@ -19,11 +19,11 @@ export async function myAction(prevState: any, formData: FormData) {
       message: "username must be at least 3 characters long",
     };
   }
-
+  
   return {
-    success : true,
-    message : `username updated to ${username}`
-  }
+    success: true,
+    message: `username updated to ${username}`,
+  };
 }
 
 export async function authenticate(
@@ -89,11 +89,11 @@ export type CustomerState = {
     image_url?: string[];
   };
   message?: string | null;
-  // cFieldValues?: {
-  //   name?: string;
-  //   email?: string;
-  //   image_url?: string;
-  // };
+  cFieldValues?: {
+    name?: string;
+    email?: string;
+    image_url?: string;
+  };
 };
 
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
@@ -166,10 +166,7 @@ export async function deleteInvoice(id: string) {
 
 const CreateCustomer = CustomerFormSchema.omit({ id: true });
 //const UpdateCustomer = CustomerFormSchema.omit({ id: true});
-export async function createCustomer(
-  prevState: CustomerState,
-  formData: FormData
-) {
+export async function createCustomer(prevState: CustomerState, formData: FormData ) {
   const rawCFormData = {
     //customerId: formData.get("customerId") as string,
     name: formData.get("name") as String,
