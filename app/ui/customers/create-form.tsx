@@ -1,33 +1,32 @@
 "use client";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
-import { createCustomer, CustomerState } from "@/app/lib/actions";
+import { createCustomer, State } from "@/app/lib/action2";
 import { useActionState, useEffect, useRef } from "react";
 
 export default function Form() {
-  const initialState: CustomerState = {
+  const initialState: State = {
     message: null,
     errors: {},
     cFieldValues: {},
   };
   const [state, cformAction] = useActionState(createCustomer, initialState);
-  //const formRef = useRef<HTMLFormElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
-    //const formRef = useRef<HTMLFormElement>(null);
   
-    // useEffect(() => {
-    //   if (formRef.current) {
-    //     const customerSelect = formRef.current.elements.namedItem(
-    //       "customerId"
-    //     ) as HTMLSelectElement;
-    //     // if (customerSelect && state.cFieldValues?.customerId) {
-    //     //   customerSelect.value = state.cFieldValues.customerId;
-    //     // }
-    //   }
-    // }, [state.cFieldValues]);
+    useEffect(() => {
+      if (formRef.current) {
+        const customerSelect = formRef.current.elements.namedItem(
+          "customerId"
+        ) as HTMLSelectElement;
+        // if (customerSelect && state.cFieldValues?.customerId) {
+        //   customerSelect.value = state.cFieldValues.customerId;
+        // }
+      }
+    }, [state.cFieldValues]);
 
   return (
-    <form action={cformAction}>
+    <form action={cformAction} ref={formRef}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
