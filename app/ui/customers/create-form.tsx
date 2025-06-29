@@ -1,5 +1,5 @@
 "use client";
-import { CustomerField } from "@/app/lib/definitions";
+
 import Link from "next/link";
 import {
   CheckIcon,
@@ -8,11 +8,11 @@ import {
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Button } from "@/app/ui/button";
-import { createCustomer, State } from "@/app/lib/action2";
+import { createCustomer, CState } from "@/app/lib/action2";
 import { useActionState } from "react";
 
-export default function Form({ customers }: { customers: CustomerField[] }) {
-  const initialState: State = { message: null, errors: {}, fieldValues: {} };
+export default function Form() {
+  const initialState: CState = { message: null, errors: {}, fieldValues: {} };
   const [state, formAction] = useActionState(createCustomer, initialState);
 
   //const formRef = useRef<HTMLFormElement>(null);

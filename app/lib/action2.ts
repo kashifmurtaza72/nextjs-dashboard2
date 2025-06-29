@@ -7,20 +7,20 @@ import { redirect } from "next/navigation";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
-const FormSchema = z.object({
+const CFormSchema = z.object({
   id: z.string(),
-  name: z.string({
-    invalid_type_error: "Please enter customer name.",
-  }),
-  email: z.string({
-    invalid_type_error: "Please enter email.",
-  }),
+   name: z.string()
+  .min(2, "Full name must be at least 2 characters long.") // Minimum length
+  .max(100, "Full name cannot exceed 100 characters.") // Maximum length
+  .regex(/^[a-zA-Z\s.]+$/, "Name can only contain letters"), // Allowed characters
+  
+  email: z.string().email(),
   image_url: z.string({
     invalid_type_error: "Please enter image url.",
   }),
 });
 
-export type State = {
+export type CState = {
   errors?: {
     name?: string[];
     email?: string[];
@@ -34,9 +34,9 @@ export type State = {
   };
 };
 
-const CreateCustomer = FormSchema.omit({ id: true });
+const CreateCustomer = CFormSchema.omit({ id: true });
 
-export async function createCustomer(prevState: State, formData: FormData) {
+export async function createCustomer(prevState: CState, formData: FormData) {
   const rawFormData = {
     name: formData.get("name") as string,
     email: formData.get("email") as string,
