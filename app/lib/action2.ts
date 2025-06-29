@@ -7,11 +7,17 @@ import { redirect } from "next/navigation";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
-const CustomerFormSchema = z.object({
+const FormSchema = z.object({
   id: z.string(),
-  name: z.string({ invalid_type_error: "Please add customer name" }),
-  email: z.string({ message: "Please add customer email" }),
-  image_url: z.string({ message: "Please add customer image_url" }),
+  name: z.string({
+    invalid_type_error: "Please enter customer name.",
+  }),
+  email: z.string({
+    invalid_type_error: "Please enter email.",
+  }),
+  image_url: z.string({
+    invalid_type_error: "Please enter image url.",
+  }),
 });
 
 export type State = {
@@ -21,48 +27,46 @@ export type State = {
     image_url?: string[];
   };
   message?: string | null;
-  cFieldValues?: {
+  fieldValues?: {
     name?: string;
     email?: string;
     image_url?: string;
   };
 };
 
-const CreateCustomer = CustomerFormSchema.omit({ id: true });
-export async function createCustomer(prevState: State, formData: FormData ) {
-    console.log(prevState, 'kashif')
-  const rawCFormData = {
-    name: formData.get("name") as String,
-    email: formData.get("email") as String,
-    image_url: formData.get("image_url") as String,
+const CreateCustomer = FormSchema.omit({ id: true });
+
+export async function createCustomer(prevState: State, formData: FormData) {
+  const rawFormData = {
+    name: formData.get("name") as string,
+    email: formData.get("email") as string,
+    image_url: formData.get("image_url") as string,
   };
 
-  const validatedFieldss = CreateCustomer.safeParse(rawCFormData);
+  const validatedFields = CreateCustomer.safeParse(rawFormData);
 
-  console.log(validatedFieldss);
-
-  if (!validatedFieldss.success) {
+  if (!validatedFields.success) {
     return {
-      errors: validatedFieldss.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Create Invoice.",
-      cFieldValues: rawCFormData,
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to Create Customer.",
+      fieldValues: rawFormData,
     };
   }
 
-  const { name, email, image_url } = validatedFieldss.data;
+  const { name, email, image_url } = validatedFields.data;
 
   try {
-    // await sql`
-    //   INSERT INTO customers (name, email, image_url)
-    //   VALUES (${name}, ${email}, ${image_url})
-    // `;
+    await sql`
+      INSERT INTO customers (name, email, image_url)
+      VALUES (${name}, ${email}, ${image_url})
+    `;
   } catch (error) {
     return {
-      message: `Database Error: Failed to Create Invoice.${error}`,
-      cFieldValues: rawCFormData,
+      message: `Database Error: Failed to Create Customer.${error}`,
+      fieldValues: rawFormData,
     };
   }
 
-  // revalidatePath("/dashboard/customers");
-  // redirect("/dashboard/customers");
+  revalidatePath("/dashboard/customers");
+  redirect("/dashboard/customers");
 }

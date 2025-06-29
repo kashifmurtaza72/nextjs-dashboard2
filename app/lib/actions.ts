@@ -83,6 +83,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
     customerId: formData.get("customerId") as string,
     amount: formData.get("amount") as string,
     status: formData.get("status") as string,
+    chintu: formData.get("chintu") as string,
   };
 
   const validatedFields = CreateInvoice.safeParse(rawFormData);
