@@ -12,8 +12,8 @@ import { createCustomer, CState } from "@/app/lib/action2";
 import { useActionState } from "react";
 
 export default function Form() {
-  const initialState: CState = { message: null, errors: {}, fieldValues: {} };
-  const [state, formAction] = useActionState(createCustomer, initialState);
+  //const initialState: CState = { message: null, errors: {}, fieldValues: {} };
+  const [state, formAction] = useActionState(createCustomer, {success : false});
 
   //const formRef = useRef<HTMLFormElement>(null);
 
@@ -26,7 +26,7 @@ export default function Form() {
   // }
 
   return (
-    <form action={formAction} /*ref={formRef}*/ >
+    <form action={formAction} /*ref={formRef}*/ encType="multipart/form-data">
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
@@ -98,12 +98,13 @@ export default function Form() {
               <input
                 id="image_url"
                 name="image_url"
-                type="text"
+                type="file"
                 lang="en-US"
                 defaultValue={state.fieldValues?.image_url || ""}
                 placeholder="Enter Customer Image"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                aria-describedby="image_url-error"
+                aria-describedby="image_url-error" 
+                accept="image/*"
               />
               <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>

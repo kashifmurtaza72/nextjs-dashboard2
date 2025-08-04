@@ -16,6 +16,13 @@ export type Customer = {
   image_url: string;
 };
 
+export type CState = { 
+  id: string;
+  name: string;
+  email: string;
+  image_url: File;
+};
+
 export type Invoice = {
   id: string;
   customer_id: string;

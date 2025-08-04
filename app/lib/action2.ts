@@ -5,43 +5,73 @@ import postgres from "postgres";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { NextResponse } from "next/server";
+import path from "path";
+import { writeFile } from "fs/promises";
+
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
 const CFormSchema = z.object({
   id: z.string(),
-   name: z.string()
-  .min(2, "Full name must be at least 2 characters long.") // Minimum length
-  .max(100, "Full name cannot exceed 100 characters.") // Maximum length
-  .regex(/^[a-zA-Z\s.]+$/, "Name can only contain letters"), // Allowed characters
-  
+  name: z
+    .string()
+    .min(2, "Full name must be at least 2 characters long.") // Minimum length
+    .max(100, "Full name cannot exceed 100 characters.") // Maximum length
+    .regex(/^[a-zA-Z\s.]+$/, "Name can only contain letters"), // Allowed characters
+
   email: z.string().email(),
-  image_url: z.string({
-    invalid_type_error: "Please enter image url.",
-  }),
+  // image_url: z.object({
+  //   size: z.number(),
+  //   type: z.string(),
+  //   name: z.string(),
+  //   lastModified: z.number(),
+  // }),
 });
 
-export type CState = {
-  errors?: {
-    name?: string[];
-    email?: string[];
-    image_url?: string[];
-  };
-  message?: string | null;
-  fieldValues?: {
-    name?: string;
-    email?: string;
-    image_url?: string;
-  };
-};
+// export type CState = {
+//   errors?: {
+//     name?: string[];
+//     email?: string[];
+//     image_url?: object[];
+//   };
+//   message?: string | null;
+//   fieldValues?: {
+//     name?: string;
+//     email?: string;
+//     image_url?: object;
+//   };
+// };
 
-const CreateCustomer = CFormSchema.omit({ id: true });
+ const CreateCustomer = CFormSchema.omit({ id: true });
 
-export async function createCustomer(prevState: CState, formData: FormData) {
+export async function createCustomer(prevState: any, formData: FormData) {
+  //console.log(formData, "collecting...");
+  
+  
+  const file = formData.get("image_url") as File;
+  
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const filename = file.name.replaceAll(" ", "-");
   const rawFormData = {
     name: formData.get("name") as string,
     email: formData.get("email") as string,
-    image_url: formData.get("image_url") as string,
+    file: formData.get("image_url") as File | null,
   };
+  // try {
+  //   await writeFile(
+  //     path.join(process.cwd(), "public/customers/" + filename),
+  //     buffer
+  //   );
+  //   return NextResponse.json({ Message: "Success", status: 201 });
+  // } catch (error) {
+  //   console.log("Error occured ", error);
+  //   return NextResponse.json({ Message: "Failed", status: 500 });
+  // }
+
+  //  await writeFile(
+  //     path.join(process.cwd(), "public/customers/" + filename),
+  //     buffer
+  //   );
 
   const validatedFields = CreateCustomer.safeParse(rawFormData);
 
@@ -53,12 +83,25 @@ export async function createCustomer(prevState: CState, formData: FormData) {
     };
   }
 
-  const { name, email, image_url } = validatedFields.data;
+  if (file && file.size > 0) {
+
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+       const filename = file.name.replaceAll(" ", "-");
+
+      const uploadPath = path.join(process.cwd(), 'public/customers', filename);
+      await writeFile(uploadPath, buffer);
+    }
+
+  const { name, email } = validatedFields.data;
+  const tmpurl = '/customers/'+filename
+  
+  
 
   try {
     await sql`
       INSERT INTO customers (name, email, image_url)
-      VALUES (${name}, ${email}, ${image_url})
+      VALUES (${name}, ${email}, ${tmpurl})
     `;
   } catch (error) {
     return {
