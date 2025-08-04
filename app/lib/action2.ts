@@ -1,13 +1,13 @@
 "use server";
 
 import { z } from "zod";
-import postgres from "postgres";
-import { revalidatePath } from "next/cache";
+import { writeFile } from "fs/promises";
+import path from "path";
 import { redirect } from "next/navigation";
 
-import { NextResponse } from "next/server";
-import path from "path";
-import { writeFile } from "fs/promises";
+import postgres from "postgres";
+import { revalidatePath } from "next/cache";
+
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
@@ -20,6 +20,7 @@ const CFormSchema = z.object({
     .regex(/^[a-zA-Z\s.]+$/, "Name can only contain letters"), // Allowed characters
 
   email: z.string().email(),
+   image_url: z.any()
   // image_url: z.object({
   //   size: z.number(),
   //   type: z.string(),
@@ -28,19 +29,24 @@ const CFormSchema = z.object({
   // }),
 });
 
-// export type CState = {
-//   errors?: {
-//     name?: string[];
-//     email?: string[];
-//     image_url?: object[];
-//   };
-//   message?: string | null;
-//   fieldValues?: {
-//     name?: string;
-//     email?: string;
-//     image_url?: object;
-//   };
+// export type FormState = {
+//   success: boolean;
+//   message: string;
 // };
+
+export type CState = {
+  errors?: {
+    name?: string[];
+    email?: string[];
+    image_url?: any[];
+  };
+  message?: string | null;
+  fieldValues?: {
+    name?: string;
+    email?: string;
+    image_url?: any;
+  };
+};
 
  const CreateCustomer = CFormSchema.omit({ id: true });
 
@@ -87,7 +93,9 @@ export async function createCustomer(prevState: any, formData: FormData) {
 
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
-       const filename = file.name.replaceAll(" ", "-");
+       //const filename = file.name.replaceAll(" ", "-");
+
+      const filename =  `${Date.now()}-${file.name.replaceAll(" ", "-")}`
 
       const uploadPath = path.join(process.cwd(), 'public/customers', filename);
       await writeFile(uploadPath, buffer);

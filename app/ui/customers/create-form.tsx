@@ -8,7 +8,7 @@ import {
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Button } from "@/app/ui/button";
-import { createCustomer, CState } from "@/app/lib/action2";
+import { createCustomer } from "@/app/lib/action2";
 import { useActionState } from "react";
 
 export default function Form() {
