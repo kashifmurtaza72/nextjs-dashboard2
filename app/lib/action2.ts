@@ -8,7 +8,6 @@ import { redirect } from "next/navigation";
 import postgres from "postgres";
 import { revalidatePath } from "next/cache";
 
-
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
 const CFormSchema = z.object({
@@ -20,7 +19,7 @@ const CFormSchema = z.object({
     .regex(/^[a-zA-Z\s.]+$/, "Name can only contain letters"), // Allowed characters
 
   email: z.string().email(),
-   image_url: z.any()
+  image_url: z.any(),
   // image_url: z.object({
   //   size: z.number(),
   //   type: z.string(),
@@ -48,36 +47,16 @@ export type CState = {
   };
 };
 
- const CreateCustomer = CFormSchema.omit({ id: true });
+const CreateCustomer = CFormSchema.omit({ id: true });
 
 export async function createCustomer(prevState: any, formData: FormData) {
-  //console.log(formData, "collecting...");
-  
-  
   const file = formData.get("image_url") as File;
-  
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const filename = file.name.replaceAll(" ", "-");
+
   const rawFormData = {
     name: formData.get("name") as string,
     email: formData.get("email") as string,
     file: formData.get("image_url") as File | null,
   };
-  // try {
-  //   await writeFile(
-  //     path.join(process.cwd(), "public/customers/" + filename),
-  //     buffer
-  //   );
-  //   return NextResponse.json({ Message: "Success", status: 201 });
-  // } catch (error) {
-  //   console.log("Error occured ", error);
-  //   return NextResponse.json({ Message: "Failed", status: 500 });
-  // }
-
-  //  await writeFile(
-  //     path.join(process.cwd(), "public/customers/" + filename),
-  //     buffer
-  //   );
 
   const validatedFields = CreateCustomer.safeParse(rawFormData);
 
@@ -89,22 +68,19 @@ export async function createCustomer(prevState: any, formData: FormData) {
     };
   }
 
-  if (file && file.size > 0) {
+  // if (file && file.size > 0) {
 
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-       //const filename = file.name.replaceAll(" ", "-");
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
 
-      const filename =  `${Date.now()}-${file.name.replaceAll(" ", "-")}`
+  const filename = `${Date.now()}-${file.name.replaceAll(" ", "-")}`;
+  const tmpurl = "/customers/" + filename;
 
-      const uploadPath = path.join(process.cwd(), 'public/customers', filename);
-      await writeFile(uploadPath, buffer);
-    }
+  const uploadPath = path.join(process.cwd(), "public/customers", filename);
+  await writeFile(uploadPath, buffer);
+  // }
 
   const { name, email } = validatedFields.data;
-  const tmpurl = '/customers/'+filename
-  
-  
 
   try {
     await sql`
