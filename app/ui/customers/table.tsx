@@ -60,7 +60,7 @@ export default async function CustomersTable({
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>
                 <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-                  Customer Name
+                  Customer Nameee
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   Email
@@ -87,14 +87,16 @@ export default async function CustomersTable({
                   <td className="whitespace-nowrap px-3 py-3">
                     {customer.email}
                   </td>
+                  
                   <td className="whitespace-nowrap px-3 py-3">
-                    <Image
+                  {customer.image_url && (<Image
                       src={customer.image_url}
                       className="rounded-full"
                       width={28}
                       height={28}
                       alt={`${customer.name}'s profile picture`}
-                    />
+                    />) }  
+                    
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">

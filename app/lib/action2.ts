@@ -9,9 +9,14 @@ import postgres from "postgres";
 import { revalidatePath } from "next/cache";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
-
+const MAX_FILE_SIZE = 5000000;
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
 const CFormSchema = z.object({
-  id: z.string(),
   name: z
     .string()
     .min(2, "Full name must be at least 2 characters long.") // Minimum length
@@ -19,19 +24,14 @@ const CFormSchema = z.object({
     .regex(/^[a-zA-Z\s.]+$/, "Name can only contain letters"), // Allowed characters
 
   email: z.string().email(),
-  image_url: z.any(),
-  // image_url: z.object({
-  //   size: z.number(),
-  //   type: z.string(),
-  //   name: z.string(),
-  //   lastModified: z.number(),
-  // }),
+  image_url: z
+    .any()
+    // .refine((file) => file?.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
+    // .refine(
+    //   (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
+    //   "Only .jpg, .jpeg, .png and .webp formats are supported."
+    // ),
 });
-
-// export type FormState = {
-//   success: boolean;
-//   message: string;
-// };
 
 export type CState = {
   errors?: {
@@ -47,10 +47,10 @@ export type CState = {
   };
 };
 
-const CreateCustomer = CFormSchema.omit({ id: true });
+//const CreateCustomer = CFormSchema //.omit({ id: true });
 
 export async function createCustomer(prevState: any, formData: FormData) {
-  const image_url = formData.get("image_url") as File;
+  const image_url = (formData.get("image_url") as File) || null;
 
   const rawFormData = {
     name: formData.get("name") as string,
@@ -58,7 +58,9 @@ export async function createCustomer(prevState: any, formData: FormData) {
     image_url: formData.get("image_url") as File | null,
   };
 
-  const validatedFields = CreateCustomer.safeParse(rawFormData);
+  const validatedFields = CFormSchema.safeParse(rawFormData);
+
+  //console.log(validatedFields, 'kashifff')
 
   if (!validatedFields.success) {
     return {
@@ -69,12 +71,18 @@ export async function createCustomer(prevState: any, formData: FormData) {
   }
 
   // if (file && file.size > 0) {
-
+  //let tmpurl = null;
+  //let tmpurl: string | null = null;
   const bytes = await image_url.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  const filename = `${Date.now()}-${image_url.name.replaceAll(" ", "-")}`;
-  const tmpurl = "/customers/" + filename;
+  const filename = `${image_url.name.replaceAll(" ", "-")}`;
+
+   let tmpurl = "/customers/" + filename;
+
+  
+
+
 
   const uploadPath = path.join(process.cwd(), "public/customers", filename);
   await writeFile(uploadPath, buffer);
