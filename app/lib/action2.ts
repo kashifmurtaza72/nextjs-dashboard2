@@ -50,12 +50,12 @@ export type CState = {
 const CreateCustomer = CFormSchema.omit({ id: true });
 
 export async function createCustomer(prevState: any, formData: FormData) {
-  const file = formData.get("image_url") as File;
+  const image_url = formData.get("image_url") as File;
 
   const rawFormData = {
     name: formData.get("name") as string,
     email: formData.get("email") as string,
-    file: formData.get("image_url") as File | null,
+    image_url: formData.get("image_url") as File | null,
   };
 
   const validatedFields = CreateCustomer.safeParse(rawFormData);
@@ -70,10 +70,10 @@ export async function createCustomer(prevState: any, formData: FormData) {
 
   // if (file && file.size > 0) {
 
-  const bytes = await file.arrayBuffer();
+  const bytes = await image_url.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  const filename = `${Date.now()}-${file.name.replaceAll(" ", "-")}`;
+  const filename = `${Date.now()}-${image_url.name.replaceAll(" ", "-")}`;
   const tmpurl = "/customers/" + filename;
 
   const uploadPath = path.join(process.cwd(), "public/customers", filename);
