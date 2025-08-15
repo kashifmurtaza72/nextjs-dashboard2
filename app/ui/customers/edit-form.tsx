@@ -10,12 +10,12 @@ import {
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 
-export default function EditInvoiceForm({
+export default function EditCustomerForm({
   customer,
 }: {
   customer: CustomerField;
 }) {
-  const updateCustomerWithId = updateCustomer.bind(customer.id);
+  const updateCustomerWithId = updateCustomer.bind(null, customer.id);
 
   return (
     <form action={updateCustomerWithId}>

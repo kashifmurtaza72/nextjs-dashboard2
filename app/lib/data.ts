@@ -3,6 +3,7 @@ import {
   CustomerField,
   CustomersTableType,
   InvoiceForm,
+  CustomerForm,
   InvoicesTable,
   LatestInvoiceRaw,
   Revenue,
@@ -186,6 +187,32 @@ export async function fetchInvoiceById(id: string) {
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch invoice.");
+  }
+}
+
+
+export async function fetchCustomerById(id: string) {
+  try {
+    const data = await sql<CustomerForm[]>`
+      SELECT
+        customers.id,
+        customers.name,
+        customers.email,
+        customers.image_url
+      FROM customers
+      WHERE customers.id = ${id};
+    `;
+
+    const customer = data.map((customer) => ({
+      ...customer,
+      // Convert amount from cents to dollars
+     // amount: invoice.amount / 100,
+    }));
+    //console.log(invoice); // Invoice is an empty array []
+    return customer[0];
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch customer.");
   }
 }
 
