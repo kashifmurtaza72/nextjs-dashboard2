@@ -24,13 +24,12 @@ const CFormSchema = z.object({
     .regex(/^[a-zA-Z\s.]+$/, "Name can only contain letters"), // Allowed characters
 
   email: z.string().email(),
-  image_url: z
-    .any()
-    // .refine((file) => file?.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
-    // .refine(
-    //   (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
-    //   "Only .jpg, .jpeg, .png and .webp formats are supported."
-    // ),
+  image_url: z.any(),
+  // .refine((file) => file?.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
+  // .refine(
+  //   (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
+  //   "Only .jpg, .jpeg, .png and .webp formats are supported."
+  // ),
 });
 
 export type CState = {
@@ -48,6 +47,7 @@ export type CState = {
 };
 
 //const CreateCustomer = CFormSchema //.omit({ id: true });
+//const UpdateInvoice = CFormSchema.omit({ id: true, date: true });
 
 export async function createCustomer(prevState: any, formData: FormData) {
   const image_url = (formData.get("image_url") as File) || null;
@@ -78,11 +78,7 @@ export async function createCustomer(prevState: any, formData: FormData) {
 
   const filename = `${image_url.name.replaceAll(" ", "-")}`;
 
-   let tmpurl = "/customers/" + filename;
-
-  
-
-
+  let tmpurl = "/customers/" + filename;
 
   const uploadPath = path.join(process.cwd(), "public/customers", filename);
   await writeFile(uploadPath, buffer);
@@ -106,26 +102,32 @@ export async function createCustomer(prevState: any, formData: FormData) {
   redirect("/dashboard/customers");
 }
 
-
 export async function updateCustomer(id: string, formData: FormData) {
-  console.log(formData, 'kashif')
-  const { customerId, amount, status } = UpdateInvoice.parse({
-    customerId: formData.get("customerId"),
-    amount: formData.get("amount"),
-    status: formData.get("status"),
+  console.log(formData, "kashif");
+  const { name, email, image_url } = CFormSchema.parse({
+    name: formData.get("name") as string,
+    email: formData.get("email") as string,
+    image_url: formData.get("image_url") as File | null,
   });
 
-  const amountInCents = amount * 100;
+  //const amountInCents = amount * 100;
   try {
     await sql`
-    UPDATE invoices
-    SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
+    UPDATE customers
+    SET name = ${name}, email = ${email}, image_url = ${image_url}
     WHERE id = ${id}
   `;
   } catch (error) {
     console.log(error);
   }
 
-  revalidatePath("/dashboard/invoices");
-  redirect("/dashboard/invoices");
+  revalidatePath("/dashboard/customers");
+  redirect("/dashboard/customers");
+}
+
+
+export async function deleteCustomer(id: string) {
+  //  throw new Error('Failed to Delete Invoice');
+  await sql`DELETE FROM customers WHERE id = ${id}`;
+  revalidatePath("/dashboard/customers");
 }

@@ -23,7 +23,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
           },
         ]}
       />
-      <Form />
+      <Form  />
       {/* <Form customer={customer} /> */}
     </main>
   );
