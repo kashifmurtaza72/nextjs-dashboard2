@@ -1,4 +1,4 @@
-//import Form from "@/app/ui/customers/edit-form"; 
+import Form from "@/app/ui/customers/edit-form"; 
 import Breadcrumbs from "@/app/ui/customers/breadcrumbs";
 // import { fetchCustomerById } from "@/app/lib/data";
 import { notFound } from 'next/navigation';
@@ -23,6 +23,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
           },
         ]}
       />
+      <Form />
       {/* <Form customer={customer} /> */}
     </main>
   );
