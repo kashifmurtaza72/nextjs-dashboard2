@@ -7,6 +7,8 @@ import { redirect } from "next/navigation";
 
 import postgres from "postgres";
 import { revalidatePath } from "next/cache";
+import fs from "fs/promises";
+
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 const MAX_FILE_SIZE = 5000000;
@@ -30,6 +32,7 @@ const CFormSchema = z.object({
   //   (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
   //   "Only .jpg, .jpeg, .png and .webp formats are supported."
   // ),
+  oldImage: z.string().nullable(),
 });
 
 export type CState = {
@@ -37,12 +40,14 @@ export type CState = {
     name?: string[];
     email?: string[];
     image_url?: any[];
+    oldImage?: string | null;
   };
   message?: string | null;
   fieldValues?: {
     name?: string;
     email?: string;
     image_url?: any;
+    oldImage?: string | null;
   };
 };
 
@@ -103,18 +108,49 @@ export async function createCustomer(prevState: any, formData: FormData) {
 }
 
 export async function updateCustomer(id: string, formData: FormData) {
-  console.log(formData, "kashif");
-  const { name, email, image_url } = CFormSchema.parse({
+  const { name, email, image_url, oldImage } = CFormSchema.parse({
     name: formData.get("name") as string,
     email: formData.get("email") as string,
     image_url: formData.get("image_url") as File | null,
+    oldImage: formData.get("oldImage") as string | null,
   });
 
+  //console.log(oldImage+"-oldimage",image_url+"-newimage");
+
   //const amountInCents = amount * 100;
+  //image_url = ${image_url}
+
+  let oldImageUrl = formData.get("oldImage") as string;
+    const file = formData.get("image_url") as File;
+
+    if (file && file.size > 0) {
+      const uploadDir = path.join(process.cwd(), "public/customers");
+      await fs.mkdir(uploadDir, { recursive: true });
+
+      const filePath = path.join(uploadDir, file.name.replace("/customers/", ""));
+      const buffer = Buffer.from(await file.arrayBuffer());
+      await fs.writeFile(filePath, buffer);
+
+      // delete old file if exists
+      if (oldImageUrl && oldImageUrl.startsWith("/customers")) {
+        const oldPath = path.join(process.cwd(), "public", oldImageUrl);
+        try {
+          await fs.unlink(oldPath);
+        } catch {
+          // ignore if file not found
+        }
+      }
+
+      oldImageUrl = `/uploads/${file.name}`;
+    }
+
+    let tmpurl = "/customers/" + file.name;
+
+
   try {
     await sql`
     UPDATE customers
-    SET name = ${name}, email = ${email}, image_url = ${image_url}
+    SET name = ${name}, email = ${email}, image_url = ${tmpurl}
     WHERE id = ${id}
   `;
   } catch (error) {
@@ -124,7 +160,6 @@ export async function updateCustomer(id: string, formData: FormData) {
   revalidatePath("/dashboard/customers");
   redirect("/dashboard/customers");
 }
-
 
 export async function deleteCustomer(id: string) {
   //  throw new Error('Failed to Delete Invoice');
