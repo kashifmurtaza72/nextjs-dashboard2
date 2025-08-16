@@ -40,14 +40,14 @@ export type CState = {
     name?: string[];
     email?: string[];
     image_url?: any[];
-    oldImage?: string | null;
+    
   };
   message?: string | null;
   fieldValues?: {
     name?: string;
     email?: string;
     image_url?: any;
-    oldImage?: string | null;
+    
   };
 };
 
